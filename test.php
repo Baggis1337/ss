@@ -3,18 +3,14 @@
 <head>
 <meta name="format-detection" content="address=no">  <!-- gör inte länkar av adresser -->
     <meta charset="UTF-8">
-<!-- Lägg till i <head> -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.mapbox.com https://*.tiles.mapbox.com data: blob: 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://events.mapbox.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.mapbox.com https://unpkg.com blob:; img-src 'self' data: blob: https://*.mapbox.com https://unpkg.com;">
+	
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapbox Integration</title>
     
     <!-- External CSS Links -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.css" rel="stylesheet">  <!-- Uppdaterad 2025-02-12 -->
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.5.0/mapbox-gl-draw.css" type="text/css"> <!-- Uppdaterad 2025-02-12 -->
-<script type="module">
-    import * as turf from 'https://cdn.skypack.dev/@turf/turf';
-    window.turf = turf; // Gör tillgänglig globalt om behövs
-</script>
+
     <style>
 /* Base Styles */
 body, html {
@@ -428,115 +424,142 @@ body, html {
     height: 100%;
 }
 
-.search-container {
+/* Search Container Styles */
+#search-container {
     position: absolute;
     top: 10px;
-    right: 60px; /* Placerar sökrutan till vänster om hamburgarmenyn */
+    right: 60px; /* Space for hamburger menu */
     z-index: 2;
     width: 300px;
+    transition: opacity 0.3s, transform 0.3s;
+    opacity: 0;
+    transform: translateX(20px);
 }
 
-#search-box {
+#search-container.search-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.search-wrapper {
+    position: relative;
     width: 100%;
-    height: 40px;
-    background-color: #333333;
-    border: 1px solid #444444;
-    border-radius: 6px;
-    padding: 0 15px;
-    color: #ffffff;
+}
+
+#search-input {
+    width: 100%;
+    padding: 10px 35px 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background: #2d333b;
+    color: #adbac7;
     font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#search-input:focus {
     outline: none;
-    transition: all 0.3s ease;
+    background: #22272e;
+    color: #ffffff;
 }
 
-#search-box:focus {
-    border-color: #666666;
-    box-shadow: 0 0 0 2px rgba(68, 68, 68, 0.3);
+.search-clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #adbac7;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#search-box::placeholder {
-    color: #888888;
+.search-clear-btn:hover {
+    color: #ffffff;
 }
 
-/* Search Results Container */
 .search-results {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
+    background: #2d333b;
+    border-radius: 4px;
     margin-top: 5px;
-    background-color: #333333;
-    border: 1px solid #444444;
-    border-radius: 6px;
     max-height: 400px;
     overflow-y: auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     display: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-
-    .result-badge {
-        display: inline-block;
-        background-color: #4a4a4a;
-        color: #ffffff;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 11px;
-        margin-top: 4px;
-    }
 
 .search-result-item {
     padding: 12px 15px;
     cursor: pointer;
-    border-bottom: 1px solid #444444;
-    transition: all 0.2s ease;
+    border-bottom: 1px solid #444c56;
+    color: #adbac7;
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    align-items: center;
+    gap: 10px;
 }
-
 
 .search-result-item:last-child {
     border-bottom: none;
 }
 
 .search-result-item:hover {
-    background-color: #444444;
-}
-
-.result-title {
+    background: #316dca;
     color: #ffffff;
-    font-size: 14px;
-    margin-bottom: 4px;
 }
 
-.result-description {
-    color: #888888;
+.search-result-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.search-result-content {
+    flex-grow: 1;
+}
+
+.search-result-title {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.search-result-subtitle {
     font-size: 12px;
+    color: #768390;
 }
 
-/* Custom Scrollbar för sökresultat */
+/* Custom Scrollbar for Search Results */
 .search-results::-webkit-scrollbar {
     width: 6px;
 }
 
 .search-results::-webkit-scrollbar-track {
-    background: #333333;
+    background: #2d333b;
 }
 
 .search-results::-webkit-scrollbar-thumb {
-    background: #444444;
+    background: #444c56;
     border-radius: 3px;
 }
 
-.search-results::-webkit-scrollbar-thumb:hover {
-    background: #555555;
+.mapboxgl-marker {
+    animation: bounce 0.5s ease-out;
 }
 
-
-.highlight {
-    background-color: rgba(49, 109, 202, 0.2);
-    padding: 0 2px;
-    border-radius: 2px;
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0); }
 }
 
 /* Responsive Design */
@@ -563,13 +586,19 @@ body, html {
         width: 28px;
         height: 28px;
     }
+	    #search-container {
+        width: calc(50% - 70px);
+    }
 }
     </style>
 </head>
 <body>
     <div id="map"></div>
-	<div class="search-container">
-    <input type="text" id="search-box" placeholder="Search..." />
+	<div id="search-container" class="search-hidden">
+    <div class="search-wrapper">
+        <input type="text" id="search-input" placeholder="Sök platser och sevärdheter...">
+        <button id="search-clear" class="search-clear-btn" style="display: none;">×</button>
+    </div>
     <div id="search-results" class="search-results"></div>
 </div>
     <button class="menu-toggle" onclick="toggleMenu()">☰</button>
@@ -637,120 +666,37 @@ body, html {
     <script src='https://unpkg.com/@turf/turf@7.2.0/turf.min.js'></script> <!-- Uppdaterad 2025-02-12 -->
 
 <script>
-  // Mapbox configuration
-mapboxgl.accessToken = 'pk.eyJ1IjoicmVzZWthcnRhbiIsImEiOiJjanVoYW5jdWkwNGF1M3ptb3hoYnJkbTkzIn0.Yt_FQx_n7KKwitn6cH487w';
+    mapboxgl.accessToken = 'pk.eyJ1IjoicmVzZWthcnRhbiIsImEiOiJjanVoYW5jdWkwNGF1M3ptb3hoYnJkbTkzIn0.Yt_FQx_n7KKwitn6cH487w';
 
-// Konfigurera offline-hantering
-mapboxgl.setOffline(true);
-
-// Lägg till detta före map.on('load')
-if (!('geolocation' in navigator)) {
-    console.warn('Geolocation is not supported by this browser');
-} else {
-    map.on('load', () => {
-        const geolocateControl = new mapboxgl.GeolocateControl({
-            positionOptions: {
-                enableHighAccuracy: true,
-                timeout: 6000
-            },
-            trackUserLocation: true,
-            showUserLocation: true
-        });
-        map.addControl(geolocateControl, 'top-left');
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/resekartan/cm1qnu6vm00uj01r22s66aywt',
+        center: [18.0686, 59.3293],
+        zoom: 9
     });
-}
 
-const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/resekartan/cm1qnu6vm00uj01r22s66aywt',
-    center: [18.0686, 59.3293],
-    zoom: 9,
-    minZoom: 3,
-    maxZoom: 18,
-    attributionControl: false,
-    preserveDrawingBuffer: true,
-    localIdeographFontFamily: "'Noto Sans', 'Noto Sans CJK SC', sans-serif",
-    transformRequest: (url, resourceType) => {
-        // Hantera events.mapbox.com fel
-        if (url.includes('events.mapbox.com')) {
-            return { url: 'about:blank' };
-        }
-        return { url };
-    }
-});
-
-// Lägg till felhantering
-map.on('error', (e) => {
-    if (e.error && (e.error.status === 'ErrorEvent' || e.error.message.includes('events.mapbox.com'))) {
-        console.warn('Mapbox event logging failed - continuing without logging');
-        return;
-    }
-    console.error('Mapbox error:', e.error);
-});
-
-// Hantera expression-utvärderingsfel
-map.on('style.load', () => {
-    map.setFilter('road-label', ['all',
-        ['has', 'name'],
-        ['case',
-            ['has', 'len'],
-            ['>', ['number', ['get', 'len']], 0],
-            true
-        ]
-    ]);
-});
-
-const searchBox = document.getElementById('search-box');
-
-    // Sökkonfiguration
-    const SEARCH_CONFIG = {
-        types: [
-            'country',
-            'region',
-            'postcode',
-            'district',
-            'place',
-            'locality',
-            'neighborhood',
-            'address',
-            'poi'
-        ],
-        customTileset: 'resekartan.cm1mwsfmz0ssz1mmxjutycoso-2uzy7'
-    };
-
-    // Measurement variables
     let measurementActive = false;
     let points = [];
     let measureButton = null;
 
-    // Initialize map controls and layers
-  map.on('load', () => {
-    // Add Navigation Control
-const navControl = new mapboxgl.NavigationControl({
-    showCompass: true,
-    showZoom: false,
-    visualizePitch: true
-});
+    map.on('load', () => {
+        // Add Navigation Control
+        const navControl = new mapboxgl.NavigationControl({
+            showCompass: true,
+            showZoom: false
+        });
+        map.addControl(navControl, 'top-left');
 
-// Lägg till passive event listeners
-document.addEventListener('touchmove', () => {}, { passive: true });
-    map.addControl(navControl, 'top-left');
-
-    // Kontrollera om geolocation stöds innan vi lägger till kontrollen
-    if ("geolocation" in navigator) {
+        // Add Geolocation Control
         const geolocateControl = new mapboxgl.GeolocateControl({
             positionOptions: {
-                enableHighAccuracy: true,
-                timeout: 6000
+                enableHighAccuracy: true
             },
             trackUserLocation: true,
             showUserLocation: true,
             showUserHeading: true
         });
         map.addControl(geolocateControl, 'top-left');
-    } else {
-        console.warn('Geolocation is not supported by this browser');
-    }
 
         // Add Measurement Line Source
         map.addSource('measure-line', {
@@ -810,28 +756,8 @@ document.addEventListener('touchmove', () => {}, { passive: true });
         // Initialize clickable points and lines
         addClickablePointsAndLines();
     });
-	
-	// Lägg till throttling för map.triggerRepaint
-function throttle(func, limit) {
-    let inThrottle;
-    return function() {
-        const args = arguments;
-        const context = this;
-        if (!inThrottle) {
-            func.apply(context, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
-        }
-    }
-}
 
-const throttledRepaint = throttle(() => {
-    map.triggerRepaint();
-}, 16); // ~60fps
-
-// Använd throttledRepaint istället för direkt triggerRepaint
-map.on('move', throttledRepaint);
-	function addClickablePointsAndLines() {
+    function addClickablePointsAndLines() {
         let currentPopup = null;
 
         const allLayers = [
@@ -859,41 +785,7 @@ map.on('move', throttledRepaint);
             }
         });
 
-        // Sökfunktionalitet
-        const searchBox = document.getElementById('search-box');
-
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        const debouncedSearch = debounce((query) => {
-            performSearch(query);
-        }, 300);
-
-        searchBox.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            if (query.length < 2) {
-                document.getElementById('search-results').style.display = 'none';
-                return;
-            }
-            debouncedSearch(query);
-        });
-
-        // Stäng sökresultat när man klickar utanför
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-container')) {
-                document.getElementById('search-results').style.display = 'none';
-            }
-        });
-		allLayers.forEach(layerId => {
+        allLayers.forEach(layerId => {
             map.on('click', layerId, (e) => {
                 e.originalEvent.stopPropagation();
 
@@ -912,6 +804,7 @@ map.on('move', throttledRepaint);
                     }
                 }
 
+// N/A är bara en fallback om titel saknas.
                 const description = `
                     <div class="popup-title">${feature.properties.Name || 'N/A'}</div> 
                     <div class="popup-description">${feature.properties.Description}</div>
@@ -925,7 +818,8 @@ map.on('move', throttledRepaint);
                         <button class="popup-action-btn" onclick="searchGoogleImages('${feature.properties.Name?.replace(/'/g, "\\'")}')">
                             <i class="fas fa-images"></i> Images
                         </button>
-                        <button class="popup-action-btn" onclick="searchGoogle('${feature.properties.Name?.replace(/'/g, "\\'")}')">
+                      
+						  <button class="popup-action-btn" onclick="searchGoogle('${feature.properties.Name?.replace(/'/g, "\\'")}')">
                             <i class="fas fa-search"></i> Info
                         </button>
                     </div>
@@ -954,149 +848,38 @@ map.on('move', throttledRepaint);
         });
     }
 
-    // Sökfunktioner
-    async function performSearch(query) {
-        try {
-            const [tilesetResults, geocodingResults] = await Promise.all([
-                searchCustomTileset(query),
-                searchMapboxGeocoding(query)
-            ]);
-            displayResults([...tilesetResults, ...geocodingResults], query);
-        } catch (error) {
-            console.error('Search error:', error);
-        }
+    // Helper functions for buttons
+    function navigateToLocation(coords) {
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${coords[1]},${coords[0]}`;
+        window.open(url, '_blank');
     }
 
-    async function searchCustomTileset(query) {
-        const params = new URLSearchParams({
-            access_token: mapboxgl.accessToken,
-            tilesets: SEARCH_CONFIG.customTileset,
-            limit: 5,
-            types: 'poi',
-            fuzzyMatch: 'true',
-            language: 'sv',
-            proximity: `${map.getCenter().lng},${map.getCenter().lat}`,
-            bbox: '10.5,55.0,24.5,69.5'
-        });
-
-        try {
-            const response = await fetch(
-                `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?${params}`
-            );
-            const data = await response.json();
-            const features = data.features || [];
-            return features.filter(feature => 
-                feature.id?.startsWith(SEARCH_CONFIG.customTileset)
-            );
-        } catch (error) {
-            console.error('Tileset search error:', error);
-            return [];
-        }
-    }
-	async function searchMapboxGeocoding(query) {
-        const params = new URLSearchParams({
-            access_token: mapboxgl.accessToken,
-            types: SEARCH_CONFIG.types.join(','),
-            country: 'se',
-            language: 'sv',
-            limit: 5,
-            proximity: `${map.getCenter().lng},${map.getCenter().lat}`,
-            fuzzyMatch: 'true',
-            bbox: '10.5,55.0,24.5,69.5'
-        });
-
-        try {
-            const response = await fetch(
-                `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?${params}`
-            );
-            const data = await response.json();
-            const features = data.features || [];
-            return features.filter(feature => 
-                !feature.id?.startsWith(SEARCH_CONFIG.customTileset)
-            );
-        } catch (error) {
-            console.error('Geocoding search error:', error);
-            return [];
-        }
+    function searchGoogle(name) {
+        const url = `https://www.google.com/search?q=${encodeURIComponent(name)}`;
+        window.open(url, '_blank');
     }
 
-    function highlightMatch(text, query) {
-        if (!text || !query) return text;
-        try {
-            const regex = new RegExp(`(${query})`, 'gi');
-            return text.replace(regex, '<span class="highlight">$1</span>');
-        } catch (e) {
-            return text;
-        }
+    function searchGoogleImages(name) {
+        const url = `https://www.google.com/search?q=${encodeURIComponent(name)}&tbm=isch`;
+        window.open(url, '_blank');
     }
 
-    function displayResults(results, query) {
-        const searchResults = document.getElementById('search-results');
-        
-        if (!results.length) {
-            searchResults.style.display = 'none';
-            return;
+function saveAttraction(name) {
+    try {
+        const saved = localStorage.getItem('savedAttractions') || '[]';
+        const attractions = JSON.parse(saved);
+        if (!attractions.includes(name)) {
+            attractions.push(name);
+            localStorage.setItem('savedAttractions', JSON.stringify(attractions));
+            alert(`${name} har sparats till dina favoriter!`);
+        } else {
+            alert(`${name} finns redan i dina favoriter!`);
         }
-
-        searchResults.innerHTML = '';
-        searchResults.style.display = 'block';
-
-        const sortedResults = results.sort((a, b) => {
-            if (a.properties && a.properties.Name) return -1;
-            if (b.properties && b.properties.Name) return 1;
-            return 0;
-        });
-
-        sortedResults.forEach(result => {
-            const resultItem = document.createElement('div');
-            resultItem.className = 'search-result-item';
-            
-            const isCustomPoint = result.properties && result.properties.Name;
-            const title = isCustomPoint ? result.properties.Name : result.place_name;
-            const description = isCustomPoint ? 
-                result.properties.Description : 
-                (result.place_type ? result.place_type.join(', ') : '');
-
-            resultItem.innerHTML = `
-                <div class="result-title">${highlightMatch(title, query)}</div>
-                ${description ? `<div class="result-description">${description}</div>` : ''}
-                ${isCustomPoint ? '<div class="result-badge">Resekartan Point</div>' : ''}
-            `;
-
-            resultItem.addEventListener('click', () => {
-                const coordinates = result.geometry.coordinates;
-                
-                map.flyTo({
-                    center: coordinates,
-                    zoom: 15,
-                    essential: true
-                });
-                
-                if (isCustomPoint) {
-                    new mapboxgl.Popup()
-                        .setLngLat(coordinates)
-                        .setHTML(`
-                            <div class="popup-title">${result.properties.Name}</div>
-                            <div class="popup-description">${result.properties.Description || ''}</div>
-                            <div class="popup-actions">
-                                <button class="popup-action-btn" onclick="navigateToLocation([${coordinates}])">
-                                    <i class="fas fa-directions"></i> Navigate
-                                </button>
-                                <button class="popup-action-btn" onclick="saveAttraction('${result.properties.Name?.replace(/'/g, "\\'")}')">
-                                    <i class="fas fa-bookmark"></i> Save
-                                </button>
-                            </div>
-                        `)
-                        .addTo(map);
-                }
-                
-                searchResults.style.display = 'none';
-                searchBox.value = title;
-            });
-
-            searchResults.appendChild(resultItem);
-        });
+    } catch (error) {
+        console.error('Fel vid sparande av attraktion:', error);
+        alert('Ett fel uppstod när attraktionen skulle sparas');
     }
+}
 
     // Measurement functionality
     function toggleMeasurement() {
@@ -1114,7 +897,8 @@ map.on('move', throttledRepaint);
             document.getElementById('distance-container').style.display = 'none';
         }
     }
-	map.on('click', (e) => {
+
+    map.on('click', (e) => {
         if (!measurementActive) return;
 
         points.push([e.lngLat.lng, e.lngLat.lat]);
@@ -1174,40 +958,7 @@ map.on('move', throttledRepaint);
         });
     }
 
-    // Helper functions for buttons
-    function navigateToLocation(coords) {
-        const url = `https://www.google.com/maps/dir/?api=1&destination=${coords[1]},${coords[0]}`;
-        window.open(url, '_blank');
-    }
-
-    function searchGoogle(name) {
-        const url = `https://www.google.com/search?q=${encodeURIComponent(name)}`;
-        window.open(url, '_blank');
-    }
-
-    function searchGoogleImages(name) {
-        const url = `https://www.google.com/search?q=${encodeURIComponent(name)}&tbm=isch`;
-        window.open(url, '_blank');
-    }
-
-    function saveAttraction(name) {
-        try {
-            const saved = localStorage.getItem('savedAttractions') || '[]';
-            const attractions = JSON.parse(saved);
-            if (!attractions.includes(name)) {
-                attractions.push(name);
-                localStorage.setItem('savedAttractions', JSON.stringify(attractions));
-                alert(`${name} har sparats till dina favoriter!`);
-            } else {
-                alert(`${name} finns redan i dina favoriter!`);
-            }
-        } catch (error) {
-            console.error('Fel vid sparande av attraktion:', error);
-            alert('Ett fel uppstod när attraktionen skulle sparas');
-        }
-    }
-	
-	// UI functionality
+    // UI functionality
     function toggleMenu() {
         const sidebar = document.getElementById('sidebar');
         const mapElement = document.getElementById('map');
@@ -1279,181 +1030,408 @@ map.on('move', throttledRepaint);
             map.resize();
         }, 300);
     }
+	
+function navigateToLocation(coords) {
+    const lat = coords[1];
+    const lng = coords[0];
+    
+    // Detektera om användaren är på en Apple-enhet
+    const isAppleDevice = /iPhone|iPad|iPod|Mac/i.test(navigator.userAgent);
+    
+    // Endast webb-URLs för navigationstjänsterna
+    const navigationUrls = {
+        googleMaps: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+        appleMaps: isAppleDevice ? 
+            `http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d` : 
+            `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+        waze: `https://www.waze.com/live-map/directions?to=ll.${lat}%2C${lng}`
+    };
 
-    function navigateToLocation(coords) {
-        const lat = coords[1];
-        const lng = coords[0];
-        
-        const isAppleDevice = /iPhone|iPad|iPod|Mac/i.test(navigator.userAgent);
-        
-        const navigationUrls = {
-            googleMaps: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
-            appleMaps: isAppleDevice ? 
-                `http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d` : 
-                `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
-            waze: `https://www.waze.com/live-map/directions?to=ll.${lat}%2C${lng}`
-        };
+    // Funktion för att hantera body scroll
+    const toggleBodyScroll = (disable) => {
+        document.body.style.overflow = disable ? 'hidden' : '';
+        document.body.style.position = disable ? 'fixed' : '';
+        document.body.style.width = disable ? '100%' : '';
+    };
 
-        const toggleBodyScroll = (disable) => {
-            document.body.style.overflow = disable ? 'hidden' : '';
-            document.body.style.position = disable ? 'fixed' : '';
-            document.body.style.width = disable ? '100%' : '';
-        };
-
-        const mapChoice = document.createElement('div');
-        mapChoice.className = 'map-choice-dialog';
-        mapChoice.innerHTML = `
-            <div class="map-choice-content">
-                <h3>Navigation App</h3>
-                <button onclick="window.open('${navigationUrls.googleMaps}', '_blank')" class="google-maps-btn">
-                    <svg class="nav-icon google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333">
-                        <path d="M151444 5419C140355 1916 128560 0 116311 0 80573 0 48591 16155 27269 41534l54942 46222 69232-82338z" fill="#1a73e8"/>
-                        <path d="M27244 41534C10257 61747 0 87832 0 116286c0 21876 4360 39594 11517 55472l70669-84002-54942-46222z" fill="#ea4335"/>
-                        <path d="M116311 71828c24573 0 44483 19910 44483 44483 0 10938-3957 20969-10509 28706 0 0 35133-41786 69232-82313-14089-27093-38510-47936-68048-57286L82186 87756c8166-9753 20415-15928 34125-15928z" fill="#4285f4"/>
-                        <path d="M116311 160769c-24573 0-44483-19910-44483-44483 0-10863 3906-20818 10358-28555l-70669 84027c12072 26791 32159 48289 52851 75381l85891-102122c-8141 9628-20339 15752-33948 15752z" fill="#fbbc04"/>
-                        <path d="M148571 275014c38787-60663 84026-88210 84026-158728 0-19331-4738-37552-13080-53581L64393 247140c6578 8620 13206 17793 19683 27900 23590 36444 17037 58294 32260 58294 15172 0 8644-21876 32235-58320z" fill="#34a853"/>
-                    </svg>
-                    Google Maps
-                </button>
-                <button onclick="window.open('${navigationUrls.appleMaps}', '_blank')" class="apple-maps-btn">
-                    <svg class="nav-icon apple-icon" viewBox="0 0 814 1000">
-                        <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57-155.5-127C46.7 790.7 0 663 0 541.8c0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z" fill="#cccccc"/>
-                    </svg>
-                    Apple Maps
-                </button>
-                <button onclick="window.open('${navigationUrls.waze}', '_blank')" class="waze-btn">
-                    <svg class="nav-icon waze-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M13.314 1.59c-.225.003-.45.013-.675.03-2.165.155-4.295.924-6.069 2.327-2.194 1.732-3.296 4.325-3.496 7.05h.002c-.093 1.22-.23 2.15-.469 2.63-.238.479-.42.638-1.24.639C.27 14.259-.4 15.612.266 16.482c1.248 1.657 2.902 2.705 4.72 3.364a2.198 2.198 0 00-.033.367 2.198 2.198 0 002.2 2.197 2.198 2.198 0 002.128-1.668c1.307.12 2.607.14 3.824.1.364-.012.73-.045 1.094-.092a2.198 2.198 0 002.127 1.66 2.198 2.198 0 002.2-2.197 2.198 2.198 0 00-.151-.797 12.155 12.155 0 002.303-1.549c2.094-1.807 3.511-4.399 3.302-7.404-.112-1.723-.761-3.298-1.748-4.608-2.143-2.86-5.53-4.309-8.918-4.265zm.366 1.54c.312.008.623.027.933.063 2.48.288 4.842 1.496 6.4 3.577v.001c.829 1.1 1.355 2.386 1.446 3.792v.003c.173 2.477-.965 4.583-2.777 6.147a10.66 10.66 0 01-2.375 1.535 2.198 2.198 0 00-.98-.234 2.198 2.198 0 00-1.934 1.158 9.894 9.894 0 01-1.338.146 27.323 27.323 0 01-3.971-.148 2.198 2.198 0 00-1.932-1.156 2.198 2.198 0 00-1.347.463c-1.626-.553-3.078-1.422-4.155-2.762 1.052-.096 1.916-.6 2.319-1.408.443-.889.53-1.947.625-3.198v-.002c.175-2.391 1.11-4.536 2.92-5.964h.002c1.77-1.402 3.978-2.061 6.164-2.012zm-3.157 4.638c-.688 0-1.252.579-1.252 1.298 0 .72.564 1.297 1.252 1.297.689 0 1.252-.577 1.252-1.297 0-.711-.563-1.298-1.252-1.298zm5.514 0c-.688 0-1.25.579-1.25 1.298-.008.72.554 1.297 1.25 1.297.688 0 1.252-.577 1.252-1.297 0-.711-.564-1.298-1.252-1.298zM9.641 11.78a.72.72 0 00-.588.32.692.692 0 00-.11.54c.345 1.783 2.175 3.129 4.264 3.129h.125c1.056-.032 2.026-.343 2.816-.922.767-.556 1.29-1.316 1.477-2.137a.746.746 0 00-.094-.547.69.69 0 00-.445-.32.714.714 0 00-.867.539c-.22.93-1.299 1.9-2.934 1.94-1.572.046-2.738-.986-2.926-1.956a.72.72 0 00-.718-.586Z" fill="#33ccff"/>
-                    </svg>
-                    Waze
-                </button>
-                <button class="cancel-btn" onclick="this.closest('.map-choice-dialog').remove(); toggleBodyScroll(false)">
-                    Cancel
-                </button>
-            </div>
+    const mapChoice = document.createElement('div');
+    mapChoice.className = 'map-choice-dialog';
+    mapChoice.innerHTML = `
+        <div class="map-choice-content">
+            <h3>Navigation App</h3>
+            <button onclick="window.open('${navigationUrls.googleMaps}', '_blank')" class="google-maps-btn">
+                <svg class="nav-icon google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333">
+                    <path d="M151444 5419C140355 1916 128560 0 116311 0 80573 0 48591 16155 27269 41534l54942 46222 69232-82338z" fill="#1a73e8"/>
+                    <path d="M27244 41534C10257 61747 0 87832 0 116286c0 21876 4360 39594 11517 55472l70669-84002-54942-46222z" fill="#ea4335"/>
+                    <path d="M116311 71828c24573 0 44483 19910 44483 44483 0 10938-3957 20969-10509 28706 0 0 35133-41786 69232-82313-14089-27093-38510-47936-68048-57286L82186 87756c8166-9753 20415-15928 34125-15928z" fill="#4285f4"/>
+                    <path d="M116311 160769c-24573 0-44483-19910-44483-44483 0-10863 3906-20818 10358-28555l-70669 84027c12072 26791 32159 48289 52851 75381l85891-102122c-8141 9628-20339 15752-33948 15752z" fill="#fbbc04"/>
+                    <path d="M148571 275014c38787-60663 84026-88210 84026-158728 0-19331-4738-37552-13080-53581L64393 247140c6578 8620 13206 17793 19683 27900 23590 36444 17037 58294 32260 58294 15172 0 8644-21876 32235-58320z" fill="#34a853"/>
+                </svg>
+                Google Maps
+            </button>
+            <button onclick="window.open('${navigationUrls.appleMaps}', '_blank')" class="apple-maps-btn">
+                <svg class="nav-icon apple-icon" viewBox="0 0 814 1000">
+                    <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57-155.5-127C46.7 790.7 0 663 0 541.8c0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z" fill="#cccccc"/>
+                </svg>
+                Apple Maps
+            </button>
+            <button onclick="window.open('${navigationUrls.waze}', '_blank')" class="waze-btn">
+                <svg class="nav-icon waze-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M13.314 1.59c-.225.003-.45.013-.675.03-2.165.155-4.295.924-6.069 2.327-2.194 1.732-3.296 4.325-3.496 7.05h.002c-.093 1.22-.23 2.15-.469 2.63-.238.479-.42.638-1.24.639C.27 14.259-.4 15.612.266 16.482c1.248 1.657 2.902 2.705 4.72 3.364a2.198 2.198 0 00-.033.367 2.198 2.198 0 002.2 2.197 2.198 2.198 0 002.128-1.668c1.307.12 2.607.14 3.824.1.364-.012.73-.045 1.094-.092a2.198 2.198 0 002.127 1.66 2.198 2.198 0 002.2-2.197 2.198 2.198 0 00-.151-.797 12.155 12.155 0 002.303-1.549c2.094-1.807 3.511-4.399 3.302-7.404-.112-1.723-.761-3.298-1.748-4.608-2.143-2.86-5.53-4.309-8.918-4.265zm.366 1.54c.312.008.623.027.933.063 2.48.288 4.842 1.496 6.4 3.577v.001c.829 1.1 1.355 2.386 1.446 3.792v.003c.173 2.477-.965 4.583-2.777 6.147a10.66 10.66 0 01-2.375 1.535 2.198 2.198 0 00-.98-.234 2.198 2.198 0 00-1.934 1.158 9.894 9.894 0 01-1.338.146 27.323 27.323 0 01-3.971-.148 2.198 2.198 0 00-1.932-1.156 2.198 2.198 0 00-1.347.463c-1.626-.553-3.078-1.422-4.155-2.762 1.052-.096 1.916-.6 2.319-1.408.443-.889.53-1.947.625-3.198v-.002c.175-2.391 1.11-4.536 2.92-5.964h.002c1.77-1.402 3.978-2.061 6.164-2.012zm-3.157 4.638c-.688 0-1.252.579-1.252 1.298 0 .72.564 1.297 1.252 1.297.689 0 1.252-.577 1.252-1.297 0-.711-.563-1.298-1.252-1.298zm5.514 0c-.688 0-1.25.579-1.25 1.298-.008.72.554 1.297 1.25 1.297.688 0 1.252-.577 1.252-1.297 0-.711-.564-1.298-1.252-1.298zM9.641 11.78a.72.72 0 00-.588.32.692.692 0 00-.11.54c.345 1.783 2.175 3.129 4.264 3.129h.125c1.056-.032 2.026-.343 2.816-.922.767-.556 1.29-1.316 1.477-2.137a.746.746 0 00-.094-.547.69.69 0 00-.445-.32.714.714 0 00-.867.539c-.22.93-1.299 1.9-2.934 1.94-1.572.046-2.738-.986-2.926-1.956a.72.72 0 00-.718-.586Z" fill="#33ccff"/>
+                </svg>
+                Waze
+            </button>
+            <button class="cancel-btn" onclick="this.closest('.map-choice-dialog').remove(); toggleBodyScroll(false)">
+                Cancel
+            </button>
+        </div>
+    `;
+    
+    // Uppdaterar CSS för att ändra textfärgen
+    if (!document.querySelector('#map-choice-styles')) {
+        const style = document.createElement('style');
+        style.id = 'map-choice-styles';
+        style.textContent = `
+            .map-choice-dialog {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                -webkit-overflow-scrolling: touch;
+            }
+            .map-choice-content {
+                background: #2d333b;
+                padding: 20px;
+                border-radius: 6px;
+                text-align: center;
+                max-width: 300px;
+                width: 90%;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+                position: relative;
+                margin: auto;
+            }
+            .map-choice-content h3 {
+                margin: 0 0 15px 0;
+                color: #FFFAFA;
+                font-size: 16px;
+                font-weight: 600;
+            }
+            .map-choice-content button {
+                display: block;
+                width: 100%;
+                padding: 12px;
+                margin: 8px 0;
+                border: 1px solid #444c56;
+                border-radius: 6px;
+                background: #22272e;
+                color: #adbac7;
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .nav-icon {
+                margin-right: 8px;
+                width: 24px;
+                height: 24px;
+            }
+            .map-choice-content button:hover {
+                background: #316dca;
+                border-color: #316dca;
+                color: #ffffff;
+            }
+            .map-choice-content button:hover svg path {
+                fill: #ffffff;
+            }
+            .map-choice-content .cancel-btn {
+                background: #2d333b;
+                border-color: #444c56;
+                margin-top: 16px;
+                color: #FFFAFA;
+            }
+            .map-choice-content .cancel-btn:hover {
+                background: #444c56;
+                border-color: #444c56;
+                color: #ffffff;
+            }
+            .map-choice-content button:active {
+                transform: scale(0.98);
+            }
         `;
-        
-        if (!document.querySelector('#map-choice-styles')) {
-            const style = document.createElement('style');
-            style.id = 'map-choice-styles';
-            style.textContent = `
-                .map-choice-dialog {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: rgba(0, 0, 0, 0.7);
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    z-index: 10000;
-                    -webkit-overflow-scrolling: touch;
-                }
-                .map-choice-content {
-                    background: #2d333b;
-                    padding: 20px;
-                    border-radius: 6px;
-                    text-align: center;
-                    max-width: 300px;
-                    width: 90%;
-                    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-                    position: relative;
-                    margin: auto;
-                }
-                .map-choice-content h3 {
-                    margin: 0 0 15px 0;
-                    color: #FFFAFA;
-                    font-size: 16px;
-                    font-weight: 600;
-                }
-                .map-choice-content button {
-                    display: block;
-                    width: 100%;
-                    padding: 12px;
-                    margin: 8px 0;
-                    border: 1px solid #444c56;
-                    border-radius: 6px;
-                    background: #22272e;
-                    color: #adbac7;
-                    font-size: 14px;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .nav-icon {
-                    margin-right: 8px;
-                    width: 24px;
-                    height: 24px;
-                }
-                .map-choice-content button:hover {
-                    background: #316dca;
-                    border-color: #316dca;
-                    color: #ffffff;
-                }
-                .map-choice-content button:hover svg path {
-                    fill: #ffffff;
-                }
-                .map-choice-content .cancel-btn {
-                    background: #2d333b;
-                    border-color: #444c56;
-                    margin-top: 16px;
-                    color: #FFFAFA;
-                }
-                .map-choice-content .cancel-btn:hover {
-                    background: #444c56;
-                    border-color: #444c56;
-                    color: #ffffff;
-                }
-				.map-choice-content button:active {
-                    transform: scale(0.98);
-                }
-            `;
-            document.head.appendChild(style);
-        }
+        document.head.appendChild(style);
+    }
 
-        // Ta bort eventuell existerande dialog först
-        const existingDialog = document.querySelector('.map-choice-dialog');
-        if (existingDialog) {
-            existingDialog.remove();
-        }
+    // Ta bort eventuell existerande dialog först
+    const existingDialog = document.querySelector('.map-choice-dialog');
+    if (existingDialog) {
+        existingDialog.remove();
+    }
 
-        // Lägg till dialog och lås scroll
-        document.body.appendChild(mapChoice);
-        toggleBodyScroll(true);
+    // Lägg till dialog och lås scroll
+    document.body.appendChild(mapChoice);
+    toggleBodyScroll(true);
 
-        // Stäng dialog när man klickar utanför
-        mapChoice.addEventListener('click', (e) => {
-            if (e.target === mapChoice) {
-                mapChoice.remove();
-                toggleBodyScroll(false);
-            }
-        });
-
-        // Städa upp vid eventuell programmatisk borttagning
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        for (const node of mutation.removedNodes) {
-            if (node === mapChoice) {
-                toggleBodyScroll(false);
-                observer.disconnect();
-                break;
-            }
+    // Stäng dialog när man klickar utanför
+    mapChoice.addEventListener('click', (e) => {
+        if (e.target === mapChoice) {
+            mapChoice.remove();
+            toggleBodyScroll(false);
         }
     });
-});
-        observer.observe(document.body, {
-            childList: true
+
+    // Städa upp vid eventuell programmatisk borttagning
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.removedNodes.contains(mapChoice)) {
+                toggleBodyScroll(false);
+                observer.disconnect();
+            }
         });
+    });
+
+    observer.observe(document.body, {
+        childList: true
+    });
+}
+
+// Search functionality
+const searchContainer = document.getElementById('search-container');
+const searchInput = document.getElementById('search-input');
+const searchClear = document.getElementById('search-clear');
+const searchResults = document.getElementById('search-results');
+
+let searchTimeout = null;
+let currentFeatures = [];
+
+// Modify your existing toggleMenu function to show/hide search
+function toggleMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const mapElement = document.getElementById('map');
+    const bottomMenu = document.getElementById('bottom-menu');
+    const buttonContainer = document.getElementById('button-container');
+    const tabContent = document.getElementById('tab-content');
+
+    if (bottomMenu.style.display === 'flex') {
+        bottomMenu.style.display = 'none';
+        mapElement.style.width = '100%';
+        mapElement.style.height = '100%';
+        buttonContainer.style.display = 'flex';
+        tabContent.style.display = 'none';
+        searchContainer.classList.remove('search-visible');
+    } else {
+        if (sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+            mapElement.style.width = '100%';
+            mapElement.style.height = '100%';
+            buttonContainer.style.display = 'flex';
+            tabContent.style.display = 'none';
+            searchContainer.classList.remove('search-visible');
+        } else {
+            sidebar.classList.add('open');
+            mapElement.style.width = window.innerWidth <= 768 ? '50%' : '80%';
+            searchContainer.classList.add('search-visible');
+        }
     }
-	map.on('error', (e) => {
-    if (e.error && e.error.status === 'ErrorEvent') {
-        console.warn('Mapbox event logging failed - continuing without logging');
-        return; // Ignorera felet och fortsätt
+
+    setTimeout(() => {
+        map.resize();
+    }, 300);
+}
+
+// Search functionality
+searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim();
+    searchClear.style.display = query ? 'flex' : 'none';
+    
+    if (searchTimeout) {
+        clearTimeout(searchTimeout);
     }
-    console.error('Mapbox error:', e.error);
+
+    if (!query) {
+        searchResults.style.display = 'none';
+        return;
+    }
+
+    searchTimeout = setTimeout(() => {
+        performSearch(query);
+    }, 300);
+});
+
+searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClear.style.display = 'none';
+    searchResults.style.display = 'none';
+});
+
+// Create a marker for search results
+const searchMarker = new mapboxgl.Marker({
+    color: '#00b4ff',
+    scale: 0.8
+});
+
+async function performSearch(query) {
+    try {
+        // Search in Mapbox Geocoding API - removed country restriction
+        const geocodingUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxgl.accessToken}&limit=10`;
+        const response = await fetch(geocodingUrl);
+        const data = await response.json();
+
+        // Search in custom features from tileset
+        const customFeatures = await searchCustomFeatures(query);
+
+        // Combine and display results, prioritizing custom features
+        displaySearchResults([...customFeatures, ...data.features]);
+    } catch (error) {
+        console.error('Search error:', error);
+    }
+}
+
+async function searchCustomFeatures(query) {
+    query = query.toLowerCase();
+    const features = [];
+    
+    try {
+        // Use your tileset ID to fetch features
+        const tilesetId = 'resekartan.cm1mwsfmz0ssz1mmxjutycoso-2uzy7';
+        const bbox = '-180,-90,180,90'; // World bbox
+        const tilesetUrl = `https://api.mapbox.com/v4/${tilesetId}/tilequery/${bbox}.json?access_token=${mapboxgl.accessToken}`;
+        
+        const response = await fetch(tilesetUrl);
+        const data = await response.json();
+        
+        if (data.features) {
+            data.features.forEach(feature => {
+                if (feature.properties && 
+                    feature.properties.Name && 
+                    feature.properties.Name.toLowerCase().includes(query)) {
+                    features.push({
+                        ...feature,
+                        place_name: feature.properties.Name,
+                        place_type: ['custom'],
+                        center: feature.geometry.coordinates
+                    });
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching custom features:', error);
+    }
+
+    return features;
+}
+
+function displaySearchResults(features) {
+    searchResults.innerHTML = '';
+    currentFeatures = features;
+
+    if (features.length === 0) {
+        searchResults.style.display = 'none';
+        return;
+    }
+
+    features.forEach((feature, index) => {
+        const resultItem = document.createElement('div');
+        resultItem.className = 'search-result-item';
+        
+        const isCustomFeature = feature.properties && feature.properties.Name;
+        const coordinates = isCustomFeature ? feature.center : feature.geometry.coordinates;
+        const name = isCustomFeature ? feature.properties.Name : feature.place_name;
+        const type = isCustomFeature ? 'Sevärdhet' : feature.place_type.join(', ');
+        
+        resultItem.innerHTML = `
+            <div class="search-result-icon">
+                ${isCustomFeature ? '🎯' : '📍'}
+            </div>
+            <div class="search-result-content">
+                <div class="search-result-title">${name}</div>
+                <div class="search-result-subtitle">${type}</div>
+            </div>
+        `;
+
+        resultItem.addEventListener('click', () => {
+            // Remove previous marker if exists
+            searchMarker.remove();
+            
+            // Add marker at the location
+            searchMarker.setLngLat(coordinates).addTo(map);
+
+            // Fly to location
+            map.flyTo({
+                center: coordinates,
+                zoom: 15,
+                essential: true
+            });
+
+            if (isCustomFeature) {
+                // Show popup for custom features
+                const popup = new mapboxgl.Popup({
+                    closeButton: true,
+                    closeOnClick: false
+                })
+                .setLngLat(coordinates)
+                .setHTML(`
+                    <div class="popup-title">${feature.properties.Name}</div>
+                    <div class="popup-description">${feature.properties.Description || ''}</div>
+                    <div class="popup-actions">
+                        <button class="popup-action-btn" onclick="navigateToLocation([${coordinates}])">
+                            <i class="fas fa-directions"></i> Navigate
+                        </button>
+                        <button class="popup-action-btn" onclick="saveAttraction('${feature.properties.Name?.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-bookmark"></i> Save
+                        </button>
+                        <button class="popup-action-btn" onclick="searchGoogleImages('${feature.properties.Name?.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-images"></i> Images
+                        </button>
+                        <button class="popup-action-btn" onclick="searchGoogle('${feature.properties.Name?.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-search"></i> Info
+                        </button>
+                    </div>
+                `)
+                .addTo(map);
+            } else {
+                // Show simple popup for Mapbox geocoding results
+                const popup = new mapboxgl.Popup({
+                    closeButton: true,
+                    closeOnClick: false
+                })
+                .setLngLat(coordinates)
+                .setHTML(`
+                    <div class="popup-title">${name}</div>
+                    <div class="popup-description">${type}</div>
+                    <div class="popup-actions">
+                        <button class="popup-action-btn" onclick="navigateToLocation([${coordinates}])">
+                            <i class="fas fa-directions"></i> Navigate
+                        </button>
+                        <button class="popup-action-btn" onclick="searchGoogle('${name}')">
+                            <i class="fas fa-search"></i> Info
+                        </button>
+                    </div>
+                `)
+                .addTo(map);
+            }
+
+            searchResults.style.display = 'none';
+        });
+
+        searchResults.appendChild(resultItem);
+    });
+
+    searchResults.style.display = 'block';
+}
+
+// Close search results when clicking outside
+document.addEventListener('click', (e) => {
+    if (!searchContainer.contains(e.target)) {
+        searchResults.style.display = 'none';
+    }
 });
 
     // Window resize handler
